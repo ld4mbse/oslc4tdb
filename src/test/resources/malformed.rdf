@@ -1,0 +1,9 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <rdf:Description rdf:about="Person/1">
+        <foaf:firstName>foo</foaf:firstName>
+        <foaf:lastName>bar</foaf:lastName>
+        <foaf:age>130</foaf:age>
+        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person" />
+    </rdf:Description>
+</rdf:RDF>

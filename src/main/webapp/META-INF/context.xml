@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/${path.context}">
+
+    <Resource name="BeanManager" auth="Container"
+        type="javax.enterprise.inject.spi.BeanManager"
+        factory="org.jboss.weld.resources.ManagerObjectFactory" />
+
+    <Resource name="${tdb.naming.factory}" auth="Container"
+            type="com.ld4mbse.oslc4tdb.services.DatasetProducer$Factory"
+            factory="org.apache.naming.factory.BeanFactory"
+            location="${tdb.location}" />
+
+    <Environment name="oslc.baseURI" value="${app.url}"
+           type="java.lang.String" override="false"/>
+
+    <Environment name="openWorldAssumption" value="false"
+           type="java.lang.Boolean" override="false"/>
+
+</Context>

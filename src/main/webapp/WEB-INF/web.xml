@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>${project.name}</display-name>
+    <context-param>
+        <param-name>TDB_LOCATION</param-name>
+        <param-value>${tdb.location}</param-value>
+    </context-param>
+    <listener>
+        <description>Application verifier and resources releaser</description>
+        <display-name>ApplicationListener</display-name>
+        <listener-class>com.ld4mbse.oslc4tdb.web.ApplicationListener</listener-class>
+    </listener>
+</web-app>
