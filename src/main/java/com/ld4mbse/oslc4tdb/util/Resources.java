@@ -3,8 +3,8 @@ package com.ld4mbse.oslc4tdb.util;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.apache.jena.rdf.model.Resource;
@@ -24,9 +24,9 @@ public class Resources {
     public static String getETag(String object) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = object.getBytes("UTF-8");
+            byte[] bytes = object.getBytes(StandardCharsets.UTF_8);
             return new BigInteger(1, md.digest(bytes)).toString(16);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException("Could not compute ETag for " + object, ex);
         }
     }

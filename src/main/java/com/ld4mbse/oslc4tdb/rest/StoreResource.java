@@ -63,15 +63,9 @@ public class StoreResource extends RDFResource {
         Model model;
         try {
             StringBuffer url = request.getRequestURL();
-            boolean isHumanClient = accept.contains(MediaType.TEXT_HTML);
             if (url.charAt(url.length() - 1) != '/') url.append('/');
             model = manager.getModels(warehouse, pattern, url.toString());
-            if (isHumanClient) {
-                // renderStore(warehouse, model);
-                return Response.ok().build();
-            } else {
-                return dispatchResource(warehouse, model, "", false, false);
-            }
+            return dispatchResource(warehouse, model, "", false);
         } catch (IllegalArgumentException ex) {
             return Response.status(BAD_REQUEST)
                     .type(TEXT_PLAIN)
@@ -89,25 +83,11 @@ public class StoreResource extends RDFResource {
                              @HeaderParam(ACCEPT) String accept) {
         try {
             Model model;
-            boolean isHumanClient = accept.contains(MediaType.TEXT_HTML);
-            if (isHumanClient) {
-                model = manager.getResources(warehouse, Models.getStoreURN(store));
-                if (model == null || model.isEmpty()) {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .type(TEXT_PLAIN)
-                            .entity(store + " store not found in warehouse " + warehouse)
-                            .build();
-                } else {
-                    /*renderGraph(store, model);*/
-                    return Response.ok().build();
-                }
-            } else {
-                if (where == null && select == null)
-                    model = manager.getModel(warehouse, Models.getStoreURN(store));
-                else
-                    model = manager.getModel(warehouse, Models.getStoreURN(store), where, select);
-                return dispatchResource(store, model, "",false, false);
-            }
+            if (where == null && select == null)
+                model = manager.getModel(warehouse, Models.getStoreURN(store));
+            else
+                model = manager.getModel(warehouse, Models.getStoreURN(store), where, select);
+            return dispatchResource(store, model, "",false);
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(TEXT_PLAIN)

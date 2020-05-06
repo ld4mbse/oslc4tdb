@@ -42,7 +42,6 @@ public class RDFStoreResource extends RDFResource {
         Lang language;
         Model model;
         OutputStream output;
-        boolean isHumanClient = request.getHeader(ACCEPT).contains(MediaType.TEXT_HTML);
 
         try {
             LOG.debug("Searching TBD Store directories");
@@ -50,41 +49,32 @@ public class RDFStoreResource extends RDFResource {
             String storeURL = request.getRequestURL().toString().replace(request.getPathInfo(), "");
             model = manager.getModels(storeURL);
 
-            if (isHumanClient) {
-                renderDataStore("", model);
-            } else {
-                if (model == null || model.isEmpty()) {
-                    LOG.debug("There is not any RDF Store.");
-                    return Response.status(Response.Status.NO_CONTENT)
-                            .entity("There is not any RDF Store.")
-                            .build();
-                }
-
-                String accept = request.getHeader(org.apache.http.HttpHeaders.ACCEPT);
-                if ((language = getAcceptableLanguage()) == null) {
-                    LOG.info("The Content-Type {} is not compatible.", accept);
-                    return Response.status(Response.Status.NOT_ACCEPTABLE)
-                            .type(MediaType.TEXT_PLAIN)
-                            .entity("Incompatible ContentType: " + accept)
-                            .build();
-                }
-
-                response.setContentType(language.getContentType().toHeaderString());
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.addHeader(HttpHeaders.ETAG, Resources.getETag(model.toString()));
-
-                output = response.getOutputStream();
-                RDFDataMgr.write(output, model, language);
-                output.flush();
+            if (model == null || model.isEmpty()) {
+                LOG.debug("There is not any RDF Store.");
+                return Response.status(Response.Status.NO_CONTENT)
+                        .entity("There is not any RDF Store.")
+                        .build();
             }
+
+            String accept = request.getHeader(org.apache.http.HttpHeaders.ACCEPT);
+            if ((language = getAcceptableLanguage()) == null) {
+                LOG.info("The Content-Type {} is not compatible.", accept);
+                return Response.status(Response.Status.NOT_ACCEPTABLE)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("Incompatible ContentType: " + accept)
+                        .build();
+            }
+
+            response.setContentType(language.getContentType().toHeaderString());
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.addHeader(HttpHeaders.ETAG, Resources.getETag(model.toString()));
+
+            output = response.getOutputStream();
+            RDFDataMgr.write(output, model, language);
+            output.flush();
+
         } catch(RuntimeException | IOException e) {
             LOG.error("Could not get resource at " + request.getRequestURL().toString(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity("Could not get resource at " + request.getRequestURL().toString())
-                    .build();
-        } catch (ServletException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .type(MediaType.TEXT_PLAIN)
                     .entity("Could not get resource at " + request.getRequestURL().toString())
@@ -100,7 +90,10 @@ public class RDFStoreResource extends RDFResource {
         StringBuilder location;
 
         String contentType = request.getContentType();
-        if (contentType == null || contentType.isEmpty() || MediaType.TEXT_PLAIN.equals(contentType)) {
+        if (contentType == null ||
+                contentType.isEmpty() ||
+                MediaType.APPLICATION_JSON.equals(contentType) ||
+                MediaType.TEXT_PLAIN.equals(contentType)) {
             contentType = WebContent.ctTurtle.getContentType();
         }
 
@@ -115,7 +108,7 @@ public class RDFStoreResource extends RDFResource {
         if (store == null || store.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(contentType)
-                    .entity("Missing the Slug for naming the RDF Store.")
+                    .entity("Missing the Slug header which must specify the name of the RDF Store.")
                     .build();
         } else {
 
@@ -138,7 +131,7 @@ public class RDFStoreResource extends RDFResource {
                     catalog += "/catalog";
                     return Response.status(Response.Status.CREATED)
                             .type(contentType)
-                            .entity("The RDF store " + store + " was created successfuly.")
+                            .entity("The RDF store " + store + " was created successfully.")
                             .header(LOCATION, catalog)
                             .build();
                 } else {

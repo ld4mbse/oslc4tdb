@@ -54,14 +54,12 @@ public class GenericResource extends RDFResource {
     @Path("{warehouse:(.*/)?}" + OSLCModel.PATHS.SERVICE_PROVIDER_CATALOG)
     public Response getServiceProviderCatalog(@PathParam("warehouse") String warehouse) {
         try {
-            boolean isHumanClient = request.getHeader(ACCEPT).contains(TEXT_HTML);
             boolean masterCatalog = warehouse == null || warehouse.isEmpty();
             return dispatchResource(
                     warehouse,
                     oslcManager.getServiceProviderCatalog(warehouse),
                     masterCatalog ? "Master Catalog" : "Catalog",
-                    true,
-                    isHumanClient
+                    true
             );
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
@@ -76,8 +74,7 @@ public class GenericResource extends RDFResource {
     public Response getServiceProvider(@PathParam("warehouse") String warehouse,
                                        @PathParam("provider") String provider) {
         try {
-            boolean isHumanClient = request.getHeader(ACCEPT).contains(TEXT_HTML);
-            return dispatchResource(provider, oslcManager.getServiceProvider(warehouse, provider), "Service Provider",true, isHumanClient);
+            return dispatchResource(provider, oslcManager.getServiceProvider(warehouse, provider), "Service Provider",true);
         } catch(RuntimeException e) {
             LOG.error(e.getMessage());
             return Response.status(INTERNAL_SERVER_ERROR)
@@ -91,8 +88,7 @@ public class GenericResource extends RDFResource {
     @Path("{warehouse}/" +OSLCModel.PATHS.RESOURCE_SHAPES + "/{shape}")
     public Response getResourceShape(@PathParam("warehouse") String warehouse, @PathParam("shape") String shape) {
         try {
-            boolean isHumanClient = request.getHeader(ACCEPT).contains(TEXT_HTML);
-            return dispatchResource(shape, oslcManager.getResourceShape(warehouse, shape), "",true, isHumanClient);
+            return dispatchResource(shape, oslcManager.getResourceShape(warehouse, shape), "",true);
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
@@ -107,7 +103,7 @@ public class GenericResource extends RDFResource {
                                      @PathParam("shape") String shape,
                                      @PathParam("property") String property) {
         try {
-            return dispatchResource(property, oslcManager.getAllowedValues(warehouse, property, shape), "",true, false);
+            return dispatchResource(property, oslcManager.getAllowedValues(warehouse, property, shape), "",true);
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
@@ -135,7 +131,7 @@ public class GenericResource extends RDFResource {
                     model = rdfManager.getModel(warehouse, Models.getStoreURN(store));
                 else
                     model = rdfManager.getModel(warehouse, Models.getStoreURN(store), where, select);
-                return dispatchResource(store, model, "",false, false);
+                return dispatchResource(store, model, "",false);
             }
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -169,8 +165,6 @@ public class GenericResource extends RDFResource {
         String queryBase = request.getRequestURL().toString();
         LOG.info("GET {}[{}] @ store[{}]", type, queryString, store);
 
-        boolean isHumanClient = request.getHeader(ACCEPT).contains(TEXT_HTML);
-
         try {
             oslcType = oslcManager.getQualifiedResourceType(warehouse, type);
             if (oslcType == null) {
@@ -189,16 +183,12 @@ public class GenericResource extends RDFResource {
                         .build();
             }
 
-            if (isHumanClient) {
-                return dispatchResource(type, resource, "Query Capabilities", false, isHumanClient);
-            } else {
-                response.setContentType(lang.getContentType().toHeaderString());
-                response.setStatus(OK.getStatusCode());
-                output = response.getOutputStream();
-                RDFDataMgr.write(output, resource, lang);
-                output.flush();
-                return Response.ok().build();
-            }
+            response.setContentType(lang.getContentType().toHeaderString());
+            response.setStatus(OK.getStatusCode());
+            output = response.getOutputStream();
+            RDFDataMgr.write(output, resource, lang);
+            output.flush();
+            return Response.ok().build();
         } catch(IllegalArgumentException e) {
             return Response.status(BAD_REQUEST)
                     .type(TEXT_PLAIN)

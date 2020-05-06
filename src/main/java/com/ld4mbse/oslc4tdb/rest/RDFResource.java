@@ -100,62 +100,44 @@ public class RDFResource {
      * the outcome model includes the resource which URL corresponds to the
      * HTTP request.
      */
-    protected Response dispatchResource(String name, Model resourceModel, String type, boolean isResource, boolean isHumanClient) {
+    protected Response dispatchResource(String name, Model resourceModel, String type, boolean isResource) {
         Lang lang;
         OutputStream output;
         String uri = request.getRequestURL().toString();
         Resource resource = ResourceFactory.createResource(uri);
         try {
-            if (isHumanClient) {
-                renderOSLCMasterCatalog(name, resourceModel, type);
-                return Response.ok().build();
-            } else {
-                if (resourceModel.isEmpty()) {
-                    return Response.status(NOT_FOUND)
-                            .type(TEXT_PLAIN)
-                            .entity("The resources doesn't exists.")
-                            .build();
-                }
-                if (isResource && !resourceModel.containsResource(resource)) {
-                    return Response.status(CONFLICT)
-                            .type(TEXT_PLAIN)
-                            .entity("Internal resource URL does not match with requested URL")
-                            .build();
-                }
-                if ((lang = getAcceptableLanguage()) == null) {
-                    return Response.status(NOT_ACCEPTABLE)
-                            .type(TEXT_PLAIN)
-                            .entity("Content not acceptable")
-                            .build();
-                }
-                response.setContentType(lang.getContentType().toHeaderString());
-                response.setStatus(HttpServletResponse.SC_OK);
-                output = response.getOutputStream();
-                RDFDataMgr.write(output, resourceModel.getGraph(), lang);
-                output.flush();
-                return Response.ok().build();
+            if (resourceModel.isEmpty()) {
+                return Response.status(NOT_FOUND)
+                        .type(TEXT_PLAIN)
+                        .entity("The resources doesn't exists.")
+                        .build();
             }
+            if (isResource && !resourceModel.containsResource(resource)) {
+                return Response.status(CONFLICT)
+                        .type(TEXT_PLAIN)
+                        .entity("Internal resource URL does not match with requested URL")
+                        .build();
+            }
+            if ((lang = getAcceptableLanguage()) == null) {
+                return Response.status(NOT_ACCEPTABLE)
+                        .type(TEXT_PLAIN)
+                        .entity("Content not acceptable")
+                        .build();
+            }
+            response.setContentType(lang.getContentType().toHeaderString());
+            response.setStatus(HttpServletResponse.SC_OK);
+            output = response.getOutputStream();
+            RDFDataMgr.write(output, resourceModel.getGraph(), lang);
+            output.flush();
+            return Response.ok().build();
+
         } catch(RuntimeException | IOException e) {
             LOG.error("Could not get resource at " + uri, e);
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
                     .entity("Runtime Exception: " + e)
                     .build();
-        } catch (ServletException e) {
-            return Response.status(INTERNAL_SERVER_ERROR)
-                    .type(TEXT_PLAIN)
-                    .entity("Runtime Exception: " + e)
-                    .build();
         }
-    }
-
-    private void render(String name,
-                        LinkedHashMap<String, LinkedHashMap<String, String>> map,
-                        Integer mapSize,
-                        Model model,
-                        String renderPage) throws ServletException, IOException {
-        request.setAttribute("mapSize", mapSize);
-        render(name, map, model, renderPage);
     }
 
     private void render(String name,
@@ -176,64 +158,11 @@ public class RDFResource {
         render(name, map, model, renderPage);
     }
 
-    public void renderDataStore(String name, Model model) throws ServletException, IOException {
-        String renderPage = "/WEB-INF/pages/datastore.jsp";
-        LinkedHashMap<String, LinkedHashMap<String, String>> map = new LinkedHashMap<>();
-        map.put("Stores", getElements(model, "subject", OSLCModel.PROPS.PATHS.TYPE, 5));
-        render(name, map, map.get("Stores").size(), model, renderPage);
-    }
-
     public void renderResource(Model model, Model shacl) throws URISyntaxException, ServletException, IOException {
         String renderPage = "/WEB-INF/pages/resource.jsp";
         ResourceDescriptor descriptor = ResourceDescriptor.getInstante(model, shacl);
         RequestDispatcher rd = request.getRequestDispatcher(renderPage);
         request.setAttribute("resource", descriptor);
-        rd.forward(request, response);
-    }
-
-    public void renderOSLCMasterCatalog(String name, Model model, String type) throws ServletException, IOException {
-        LinkedHashMap<String, LinkedHashMap<String, String>> map = new LinkedHashMap<>();
-        int mapSize = 0;
-        name = name.replace("/","");
-        String renderPage = "/WEB-INF/pages/oslcmastercatalog.jsp";
-        request.setAttribute("title", type);
-
-        switch (type){
-            case "Master Catalog":
-                map.put("Catalogs", getElements(model, "object", OSLCModel.PROPS.SERVICE_PROVIDER.PATH, 5));
-                mapSize = map.get("Catalogs").size();
-                break;
-            case "Catalog":
-                map.put("Stores", getElements(model, "object", OSLCModel.PROPS.SERVICE_PROVIDER.PATH, 7));
-                mapSize = map.get("Stores").size();
-                break;
-            case "Service Provider":
-                map.put("Graphs", getElements(model, "object", OSLCModel.PROPS.PATHS.CREATION, 7));
-                mapSize = map.get("Graphs").size();
-                break;
-            case "Query Capabilities":
-                map.put("Resources", getElements(model, "object", OSLCModel.PROPS.PATHS.MEMBER, 8));
-                mapSize = map.get("Resources").size();
-                break;
-        }
-
-        render(name, map, mapSize, model, renderPage);
-    }
-
-    public void renderQuery(Model stores, Model graphs, String targetStore, String target, String query,
-                            String columns, String results,
-                            String messageType, String messageContent) throws ServletException, IOException {
-        String renderPage = "/WEB-INF/pages/query.jsp";
-        request.setAttribute("stores", stores);
-        request.setAttribute("graphs", graphs);
-        request.setAttribute("targetStore", targetStore);
-        request.setAttribute("target", target);
-        request.setAttribute("query", query);
-        request.setAttribute("columns", columns);
-        request.setAttribute("results", results);
-        request.setAttribute("message_type", messageType);
-        request.setAttribute("message_content", messageContent);
-        RequestDispatcher rd = request.getRequestDispatcher(renderPage);
         rd.forward(request, response);
     }
 
