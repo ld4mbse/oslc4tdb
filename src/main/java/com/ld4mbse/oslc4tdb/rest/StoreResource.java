@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -143,7 +144,7 @@ public class StoreResource extends RDFResource {
                 } else {
 
                     LOG.trace("Reading model from request body in {}.", contentType);
-                    InputStream inputStream = new ByteArrayInputStream(body.getBytes(Charset.forName("UTF-8")));
+                    InputStream inputStream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
 
                     String url = Requests.buildURI(oslcManager.getBaseURI(), OslcConstants.OSLC_CORE_NAMESPACE_PREFIX, warehouse, slug) + "/";
 
