@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 
 import static javax.ws.rs.core.HttpHeaders.*;
-import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -121,26 +120,13 @@ public class GenericResource extends RDFResource {
                              @HeaderParam(ACCEPT) String accept) {
         try {
             Model model;
-            boolean isHumanClient = accept.contains(MediaType.TEXT_HTML);
-            if (isHumanClient) {
-                model = rdfManager.getResources(warehouse, Models.getStoreURN(store));
-                renderGraph(store, model);
-                return Response.ok().build();
-            } else {
-                if (where == null && select == null)
-                    model = rdfManager.getModel(warehouse, Models.getStoreURN(store));
-                else
-                    model = rdfManager.getModel(warehouse, Models.getStoreURN(store), where, select);
-                return dispatchResource(store, model, "",false);
-            }
+            if (where == null && select == null)
+                model = rdfManager.getModel(warehouse, Models.getStoreURN(store));
+            else
+                model = rdfManager.getModel(warehouse, Models.getStoreURN(store), where, select);
+            return dispatchResource(store, model, "",false);
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .type(TEXT_PLAIN)
-                    .entity(ex.getMessage())
-                    .build();
-        } catch (IOException | ServletException ex) {
-            LOG.error("Could not retrieve RDF graph", ex);
-            return Response.status(SERVICE_UNAVAILABLE)
                     .type(TEXT_PLAIN)
                     .entity(ex.getMessage())
                     .build();
@@ -212,9 +198,7 @@ public class GenericResource extends RDFResource {
         Lang lang;
         Resource oslcType;
         Model resource;
-        Model shacl;
         OutputStream output;
-        boolean isHumanClient = false;
         StringBuffer query = request.getRequestURL();
 
         LOG.info("GET {} @ store[{}]", query, store);
@@ -234,15 +218,9 @@ public class GenericResource extends RDFResource {
                 query.append(queryString);
             }
 
-            String accept = request.getHeader(ACCEPT);
-            isHumanClient = accept.contains("text/html");
-
             resource = rdfManager.getResource(warehouse, query.toString(), store);
-            shacl = rdfManager.getModel(warehouse, Models.getStoreURN(store) + "-shacl");
 
-            if (isHumanClient) {
-                renderResource(resource, shacl);
-            } else if (resource == null || resource.isEmpty()) {
+            if (resource == null || resource.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .type(TEXT_PLAIN)
                         .entity("Resource not found.")
@@ -266,12 +244,6 @@ public class GenericResource extends RDFResource {
                     .type(TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();
-        } catch (ServletException | URISyntaxException e) {
-            LOG.error("Could not get resource at " + query, e);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
         }
         return Response.ok().build();
     }
@@ -287,8 +259,8 @@ public class GenericResource extends RDFResource {
         Resource resource;
         Lang inputLanguage;
         String factory, slug;
-        // String store = warehouse;
         String contentType = request.getContentType();
+
         String finalURL = request.getRequestURL().toString();
         if (contentType == null || contentType.isEmpty())
             contentType = WebContent.contentTypeRDFXML;
