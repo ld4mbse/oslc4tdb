@@ -94,7 +94,7 @@ public class RDFStoreResourceValidateSHACLTest extends BaseResourceTest {
             storeDirectory.mkdirs();
         }
         TimeUnit.SECONDS.sleep(3);
-        manager.setModel(storeName, model, null);
+        // manager.setModel(storeName, model, null);
 
     }
 

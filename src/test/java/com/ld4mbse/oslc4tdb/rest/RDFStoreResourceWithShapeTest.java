@@ -83,7 +83,7 @@ public class RDFStoreResourceWithShapeTest extends BaseResourceTest {
         language = RDFLanguages.contentTypeToLang(contentType);
         model = ModelFactory.createDefaultModel();
         RDFDataMgr.read(model.getGraph(), shacl, null, language);
-        manager.setModel(storeName, model, null);
+        // manager.setModel(storeName, model, null);
 
         dispatcher = MockDispatcherFactory.createDispatcher();
         dispatcher.getRegistry().addSingletonResource(resource);

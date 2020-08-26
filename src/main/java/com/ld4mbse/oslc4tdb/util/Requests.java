@@ -47,17 +47,6 @@ public class Requests {
         public String getHeaderValue() {
             return headerValue;
         }
-        /**
-         * Gets the quality of the HTTP header value wrapped on this instance.
-         * @return the quality of the HTTP header value wrapped on this instance.
-         */
-        public double getQuality() {
-            return quality;
-        }
-        @Override
-        public String toString() {
-            return headerValue + "=" + quality;
-        }
     }
 
     /**

@@ -40,12 +40,6 @@ public class Warehouses {
         throw new IllegalStoreException("The " + name + " warehouse does not exists in this server.");
     }
 
-    public static Dataset create(String name) {
-        if (exist(name))
-            throw new IllegalStateException(name + " warehouse already not exist");
-        return TDBFactory.createDataset(Environment.TDB_LOCATION + File.separator + name);
-    }
-
     public static boolean exist(String name) {
         String location = Environment.TDB_LOCATION + File.separator + name;
         File store = new File(location);

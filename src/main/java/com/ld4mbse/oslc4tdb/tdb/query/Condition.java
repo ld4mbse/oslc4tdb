@@ -66,45 +66,4 @@ public class Condition extends Property<Condition> {
         return values;
     }
 
-    @Override
-    public void formatProjection(String resource, StringBuilder query) {
-        throw new UnsupportedOperationException("Terms does not support Projection format");
-    }
-
-    @Override
-    public void formatSelection(String resource, StringBuilder query) {
-        String objectVariable = getObjectVariable(resource);
-        query.append(". ");
-        query.append(resource);
-        query.append(' ');
-        query.append(getPredicate(resource));
-        query.append(' ');
-        if (scoped) {
-            query.append(objectVariable);
-            properties.forEach((nested) -> {
-                nested.formatSelection(objectVariable, query);
-            });
-        } else if ("=".equals(operator))
-            query.append(values[0]);
-        else {
-            query.append(objectVariable);
-            query.append(". FILTER (");
-            query.append(objectVariable);
-            query.append(' ');
-            query.append(operator);
-            query.append(' ');
-            if ("in".equals(operator)) {
-                query.append('(');
-                query.append(values[0]);
-                for(int i = 1; i<values.length; i++) {
-                    query.append(',');
-                    query.append(values[i]);
-                }
-                query.append(')');
-            } else
-                query.append(values[0]);
-            query.append(')');
-        }
-    }
-
 }

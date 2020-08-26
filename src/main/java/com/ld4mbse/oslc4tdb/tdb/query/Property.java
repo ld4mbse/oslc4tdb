@@ -56,7 +56,7 @@ public class Property<E extends Property> {
      */
     protected final List<E> properties;
     /**
-     * Constructs an instance specifying the nested properties. 
+     * Constructs an instance specifying the nested properties.
      * @param property the underlying property of this instance.
      * @param properties nested properties.
      */
@@ -71,20 +71,6 @@ public class Property<E extends Property> {
      */
     public Property(String property) {
         this(property, Collections.emptyList());
-    }
-    /**
-     * Gets the RDF property.
-     * @return the RDF property.
-     */
-    public String getProperty() {
-        return property;
-    }
-    /**
-     * Get the nested properties of this property.
-     * @return the nested properties of this property.
-     */
-    public List<E> getProperties() {
-        return properties;
     }
     /**
      * Gets the standardized predicate to use, in a sentence, for this property

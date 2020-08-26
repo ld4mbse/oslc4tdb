@@ -1,16 +1,11 @@
 package com.ld4mbse.oslc4tdb.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * This class helps to encapsulates common SPARQL queries,
@@ -70,20 +65,6 @@ public class Queries {
         try(QueryExecution qe = QueryExecutionFactory.create(query, target)) {
             return qe.execConstruct();
         }
-    }
-
-    /**
-     * Gets all the rdf:type's of a resource to use on validations.
-     * @param resource the target resource where we will extract the types.
-     * @return all rdf:type's of {@code resource}; an empty list if no rdf:type
-     * is found.
-     */
-    public static List<String> types(Resource resource) {
-        List<String> types = new ArrayList<>();
-        StmtIterator iterator = resource.listProperties(RDF.type);
-        while(iterator.hasNext())
-            types.add(iterator.next().getObject().asResource().getURI());
-        return types;
     }
 
  }

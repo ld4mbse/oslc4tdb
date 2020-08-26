@@ -4,9 +4,7 @@ import com.ld4mbse.oslc4tdb.rest.RDFResource;
 import com.ld4mbse.oslc4tdb.model.OSLCManager;
 import com.ld4mbse.oslc4tdb.model.OSLCModel;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.ld4mbse.oslc4tdb.services.RDFManager;
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 
 import static javax.ws.rs.core.HttpHeaders.*;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -53,13 +50,7 @@ public class GenericResource extends RDFResource {
     @Path("{warehouse:(.*/)?}" + OSLCModel.PATHS.SERVICE_PROVIDER_CATALOG)
     public Response getServiceProviderCatalog(@PathParam("warehouse") String warehouse) {
         try {
-            boolean masterCatalog = warehouse == null || warehouse.isEmpty();
-            return dispatchResource(
-                    warehouse,
-                    oslcManager.getServiceProviderCatalog(warehouse),
-                    masterCatalog ? "Master Catalog" : "Catalog",
-                    true
-            );
+            return dispatchResource(oslcManager.getServiceProviderCatalog(warehouse), true);
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
@@ -73,7 +64,7 @@ public class GenericResource extends RDFResource {
     public Response getServiceProvider(@PathParam("warehouse") String warehouse,
                                        @PathParam("provider") String provider) {
         try {
-            return dispatchResource(provider, oslcManager.getServiceProvider(warehouse, provider), "Service Provider",true);
+            return dispatchResource(oslcManager.getServiceProvider(warehouse, provider), true);
         } catch(RuntimeException e) {
             LOG.error(e.getMessage());
             return Response.status(INTERNAL_SERVER_ERROR)
@@ -87,7 +78,7 @@ public class GenericResource extends RDFResource {
     @Path("{warehouse}/" +OSLCModel.PATHS.RESOURCE_SHAPES + "/{shape}")
     public Response getResourceShape(@PathParam("warehouse") String warehouse, @PathParam("shape") String shape) {
         try {
-            return dispatchResource(shape, oslcManager.getResourceShape(warehouse, shape), "",true);
+            return dispatchResource(oslcManager.getResourceShape(warehouse, shape),true);
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
@@ -102,7 +93,7 @@ public class GenericResource extends RDFResource {
                                      @PathParam("shape") String shape,
                                      @PathParam("property") String property) {
         try {
-            return dispatchResource(property, oslcManager.getAllowedValues(warehouse, property, shape), "",true);
+            return dispatchResource(oslcManager.getAllowedValues(warehouse, property, shape),true);
         } catch(RuntimeException e) {
             return Response.status(INTERNAL_SERVER_ERROR)
                     .type(TEXT_PLAIN)
@@ -124,7 +115,7 @@ public class GenericResource extends RDFResource {
                 model = rdfManager.getModel(warehouse, Models.getStoreURN(store));
             else
                 model = rdfManager.getModel(warehouse, Models.getStoreURN(store), where, select);
-            return dispatchResource(store, model, "",false);
+            return dispatchResource(model, false);
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(TEXT_PLAIN)

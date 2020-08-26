@@ -1,7 +1,6 @@
 package com.ld4mbse.oslc4tdb.services;
 
 import com.ld4mbse.oslc4tdb.tdb.query.QueryCriteria;
-import java.util.Map;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -48,15 +47,6 @@ public interface RDFManager {
      */
     void setSHACLModel(String warehouse, Model shacl, String uri);
 
-    /**
-     * Stores a model under a given URI.
-     * @param warehouse the name of the warehouse we want to save in.
-     * @param model the model to set.
-     * @param uri the model identifier. If {@code null} then the default
-     *            model on de {@link Dataset} will be replaced, be careful...
-     */
-    void setModel(String warehouse, Model model, String uri);
-
     void addModel(String warehouse, Model model, String uri);
 
     /**
@@ -95,24 +85,6 @@ public interface RDFManager {
      * @return the associated model to the resource model.
      */
     Model getResource(String warehouse, String uri, String model);
-
-    Model getResource(String warehouse, String store, String model, String id);
-
-    /**
-     * List the resources contained in a model.
-     * @param warehouse the name of the warehouse we want to search in.
-     * @param model the container model URI.
-     * @return the resources contained in a model.
-     */
-    Model getResources(String warehouse, String model);
-
-    /**
-     * Gets the namespaces prefixes known by a model.
-     * @param warehouse the name of the warehouse we want to search in.
-     * @param uri the URI of the model to get its known ns prefixes.
-     * @return
-     */
-    Map<String, String> getNSPrefixes(String warehouse, String uri);
 
     void setResource(String warehouse, Resource resource, String model);
 

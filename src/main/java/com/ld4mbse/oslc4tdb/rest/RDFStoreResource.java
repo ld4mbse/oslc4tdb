@@ -1,7 +1,6 @@
 package com.ld4mbse.oslc4tdb.rest;
 
 import com.ld4mbse.oslc4tdb.model.Environment;
-import com.ld4mbse.oslc4tdb.rest.exception.IllegalStoreException;
 import com.ld4mbse.oslc4tdb.services.RDFManager;
 import com.ld4mbse.oslc4tdb.util.Resources;
 import com.ld4mbse.oslc4tdb.util.Warehouses;
@@ -12,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -20,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 
 @Path("rdfstores")

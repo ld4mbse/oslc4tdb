@@ -66,7 +66,7 @@ public class StoreResource extends RDFResource {
             StringBuffer url = request.getRequestURL();
             if (url.charAt(url.length() - 1) != '/') url.append('/');
             model = manager.getModels(warehouse, pattern, url.toString());
-            return dispatchResource(warehouse, model, "", false);
+            return dispatchResource(model, false);
         } catch (IllegalArgumentException ex) {
             return Response.status(BAD_REQUEST)
                     .type(TEXT_PLAIN)
@@ -88,7 +88,7 @@ public class StoreResource extends RDFResource {
                 model = manager.getModel(warehouse, Models.getStoreURN(store));
             else
                 model = manager.getModel(warehouse, Models.getStoreURN(store), where, select);
-            return dispatchResource(store, model, "",false);
+            return dispatchResource(model, false);
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(TEXT_PLAIN)
@@ -317,13 +317,13 @@ public class StoreResource extends RDFResource {
                 }
 
             } catch (RiotException ex) {
-                LOG.trace("An exception has ocurred: ", ex);
+                LOG.trace("An exception has occurred: ", ex);
                 return Response.status(BAD_REQUEST)
                         .type(TEXT_PLAIN)
                         .entity("Invalid syntax: " + ex.getMessage())
                         .build();
             } catch(ValidationException e) {
-                LOG.trace("An exception has ocurred: ", e);
+                LOG.trace("An exception has occurred: ", e);
                 return Response.status(BAD_REQUEST)
                         .type(e.getMessageContentType())
                         .entity(e.getMessage())

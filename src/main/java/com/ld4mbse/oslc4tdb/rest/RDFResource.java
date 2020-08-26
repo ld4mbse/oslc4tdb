@@ -1,17 +1,11 @@
 package com.ld4mbse.oslc4tdb.rest;
 
-import com.ld4mbse.oslc4tdb.model.OSLCModel;
-import com.ld4mbse.oslc4tdb.model.ResourceDescriptor;
 import com.ld4mbse.oslc4tdb.util.Requests;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
@@ -100,7 +94,7 @@ public class RDFResource {
      * the outcome model includes the resource which URL corresponds to the
      * HTTP request.
      */
-    protected Response dispatchResource(String name, Model resourceModel, String type, boolean isResource) {
+    protected Response dispatchResource(Model resourceModel, boolean isResource) {
         Lang lang;
         OutputStream output;
         String uri = request.getRequestURL().toString();
