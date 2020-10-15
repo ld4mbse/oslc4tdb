@@ -14,12 +14,11 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- versions -->
-        <jstl.version>1.2</jstl.version>
         <weld.version>3.0.5.Final</weld.version>
         <resteasy.version>3.6.1.Final</resteasy.version>
         <jena.version>3.9.0</jena.version>
-        <loggin.version>2.8.2</loggin.version>
-        <junit.version>4.12</junit.version>
+<!--        <loggin.version>2.8.2</loggin.version>-->
+        <junit.version>4.13.1</junit.version>
         <mockito.version>2.22.0</mockito.version>
         <!-- server -->
         <server.schema>http</server.schema>
@@ -27,9 +26,9 @@
         <server.port>8080</server.port>
         <!-- paths (do not use leading or trailing slashes) -->
         <path.context>oslc4tdb</path.context>
-        <path.rest>rest</path.rest>
-        <path.shacl>shacl</path.shacl>
-        <path.graphs>graph</path.graphs>
+<!--        <path.rest>rest</path.rest>-->
+<!--        <path.shacl>shacl</path.shacl>-->
+<!--        <path.graphs>graph</path.graphs>-->
         <app.url>${server.schema}://${server.domain}:${server.port}/${path.context}</app.url>
         <!-- TDB -->
         <tdb.naming.factory>bean/DatasetFactory</tdb.naming.factory>
@@ -59,11 +58,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>${jstl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
@@ -170,15 +164,15 @@
                     </webResources>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <port>${server.port}</port>
-                    <path>/${path.context}</path>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.tomcat.maven</groupId>-->
+<!--                <artifactId>tomcat7-maven-plugin</artifactId>-->
+<!--                <version>2.2</version>-->
+<!--                <configuration>-->
+<!--                    <port>${server.port}</port>-->
+<!--                    <path>/${path.context}</path>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

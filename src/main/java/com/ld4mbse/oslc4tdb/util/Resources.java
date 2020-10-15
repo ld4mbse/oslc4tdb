@@ -1,8 +1,5 @@
 package com.ld4mbse.oslc4tdb.util;
 
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -20,7 +17,6 @@ public class Resources {
      * @param object the string with the graph value.
      * @return the ETag value.
      */
-
     public static String getETag(String object) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -29,15 +25,6 @@ public class Resources {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException("Could not compute ETag for " + object, ex);
         }
-    }
-
-    public static Lang getLanguage(String accept) {
-        Lang language;
-        if (accept == null || "*/*".equals(accept))
-            language = Lang.TURTLE;
-        else
-            language = RDFLanguages.contentTypeToLang(accept);
-        return language;
     }
 
     /**

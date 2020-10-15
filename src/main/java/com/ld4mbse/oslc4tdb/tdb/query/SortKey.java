@@ -31,21 +31,4 @@ public class SortKey extends Property<SortKey> {
         this.direction = direction;
     }
 
-    @Override
-    public void formatProjection(String resource, StringBuilder query) {
-        String objectVariable = getObjectVariable(resource);
-        if (direction == null) {
-            properties.forEach((nestedSortKey) -> {
-                nestedSortKey.formatProjection(objectVariable, query);
-            });
-        } else {
-            query.append(' ');
-            if ("-".equals(direction)) {
-                query.append("DESC(");
-                query.append(objectVariable);
-                query.append(')');
-            } else
-                query.append(objectVariable);
-        }
-    }
 }

@@ -287,58 +287,6 @@ public class TDBManager extends Observable implements RDFManager {
         }
     }
 
-    public void setModel(String catalog, Model model, String uri) {
-        Lock lock;
-        boolean mustUpdateOLSCmodel;
-        LOG.debug("> + model @ {}", uri);
-        Dataset dataset = Warehouses.get(catalog);
-        LOG.info("{} Dataset directory connected", catalog);
-        dataset.begin(ReadWrite.WRITE);
-        lock = dataset.getLock();
-        LOG.debug("> + updatingSHACL @ {}", updatingSHACL);
-        try {
-            lock.enterCriticalSection(Lock.WRITE);
-            if (uri == null) {
-
-                updatingSHACL = true;
-                dataset.getDefaultModel().removeAll();
-                dataset.getDefaultModel().add(model);
-                setChanged();
-                notifyObservers(catalog);
-                updatingSHACL = false;
-
-            } else {
-                Model validationRules = dataset.getDefaultModel();
-                ShaclValidator validator = new ShaclValidator(false);
-
-                if (!updatingSHACL) {
-                    validator.update(null, validationRules);
-                    validator.validate(model);
-                    mustUpdateOLSCmodel = !dataset.containsNamedModel(uri);
-                    dataset.replaceNamedModel(uri, model);
-                    if (mustUpdateOLSCmodel) {
-                        setChanged();
-                        notifyObservers(catalog);
-                    }
-                } else {
-                    throw new IllegalStateException("SHACL Models are being updated, please try later.");
-                }
-
-            }
-            dataset.commit();
-            LOG.debug("< [+] {} statements", model.size());
-        } catch(Exception ex) {
-            dataset.abort();
-            throw ex;
-        } finally {
-            dataset.end();
-            lock.leaveCriticalSection();
-
-            TDBFactory.release(dataset);
-            LOG.info("{} Dataset directory released", catalog);
-        }
-    }
-
     public void addModel(String warehouse, Model model, String uri) {
         Lock lock;
         boolean mustUpdateOLSCmodel;
@@ -611,26 +559,6 @@ public class TDBManager extends Observable implements RDFManager {
             lock.leaveCriticalSection();
             TDBFactory.release(dataset);
         }
-    }
-
-    @Override
-    public Model getResource(String warehouse, String store, String model, String id) {
-        Model graph = getModel(warehouse, model);
-        Model resource = graph.query(new SimpleSelector());
-        Models.importNamespacesPrefixes(graph, resource);
-        return resource;
-    }
-
-    public Model getResources(String warehouse, String model) {
-        Model resources, graph = getModel(warehouse, model);
-        resources = graph.query(new SimpleSelector(null, RDF.type, (String)null));
-        Models.importNamespacesPrefixes(graph, resources);
-        return resources;
-    }
-
-    public Map<String, String> getNSPrefixes(String warehouse, String uri) {
-        Model model = getModel(warehouse, uri);
-        return model.getNsPrefixMap();
     }
 
     @Override

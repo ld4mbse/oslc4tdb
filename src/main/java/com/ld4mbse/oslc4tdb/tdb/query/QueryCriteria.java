@@ -148,20 +148,6 @@ public class QueryCriteria {
         this.type = type;
     }
     /**
-     * Gets the target resource type to retrieve.
-     * @return the target resource type to retrieve.
-     */
-    public String getType() {
-        return type;
-    }
-    /**
-     * Gets the extra prefixes to use in the query.
-     * @return the extra prefixes to use in the query.
-     */
-    public Map<String, String> getPrefixes() {
-        return prefixes;
-    }
-    /**
      * Sets the extra prefixes to use in the query.
      * @param prefixes the extra prefixes to use in the query.
      * @throws NullPointerException if {@code prefixes} is {@code null}.
@@ -196,13 +182,6 @@ public class QueryCriteria {
         }
         setPrefixes(prfxs);
         return this;
-    }
-    /**
-     * Gets the projection properties to use in the query.
-     * @return the projection properties to use in the query.
-     */
-    public List<Property> getProperties() {
-        return properties;
     }
     /**
      * Sets the projection properties to use in the query.
@@ -251,13 +230,6 @@ public class QueryCriteria {
     public QueryCriteria select(String selectParameter) {
         setProperties(properties(selectParameter));
         return this;
-    }
-    /**
-     * Gets the conditions to use in the query.
-     * @return the conditions to use in the query.
-     */
-    public List<Condition> getConditions() {
-        return conditions;
     }
     /**
      * Gets the conditions to use in the query.
@@ -321,13 +293,6 @@ public class QueryCriteria {
     public QueryCriteria where(String whereParameter) {
         setConditions(compound_term(whereParameter));
         return this;
-    }
-    /**
-     * Gets the sort keys to use in the query.
-     * @return the sort keys to use in the query.
-     */
-    public List<SortKey> getSortKeys() {
-        return sortKeys;
     }
     /**
      * Sets the sort keys to use in the query.
