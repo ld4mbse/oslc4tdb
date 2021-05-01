@@ -386,6 +386,20 @@ public class QueryCriteria {
             sb.append(type);
             sb.append('>');
         }
+
+        for (Condition condition : conditions) {
+            String[] conditionValues = condition.getValues();
+            if(conditionValues.length > 0){
+                String conditionValue = conditionValues[0];
+                sb.append(" .");
+                sb.append(match);
+                sb.append(' ');
+                sb.append(condition.getPredicate(""));
+                sb.append(' ');
+                sb.append(conditionValue);
+            }
+        }
+
         conditions.forEach((condition) -> {
             condition.formatSelection(match, sb);
         });
